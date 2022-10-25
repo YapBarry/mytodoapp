@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "//github.io/YapBarry/mytodoapp/static/css/main.12235b6e.css",
+    "main.js": "//github.io/YapBarry/mytodoapp/static/js/main.b765b395.js",
+    "index.html": "//github.io/YapBarry/mytodoapp/index.html",
+    "main.12235b6e.css.map": "//github.io/YapBarry/mytodoapp/static/css/main.12235b6e.css.map",
+    "main.b765b395.js.map": "//github.io/YapBarry/mytodoapp/static/js/main.b765b395.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.12235b6e.css",
+    "static/js/main.b765b395.js"
+  ]
+}
