@@ -25,20 +25,16 @@ export function App() {
         toDo: toDo,
         completed: false
       };
-      if (input !== "") {
-        // add todo to database (for database method)
-        const collectionRef = collection(db, 'todo');
-        await addDoc(collectionRef, newToDo);
 
-        // // add the todo to existing list (for non database method)
-        // setList([...list, newToDo]);
+      // add todo to database (for database method)
+      const collectionRef = collection(db, 'todo');
+      await addDoc(collectionRef, newToDo);
 
-        // clear input box
-        setInput("");
+      // // add the todo to existing list (for non database method)
+      // setList([...list, newToDo]);
 
-      }
-
-
+      // clear input box
+      setInput("");
     }
   };
 
