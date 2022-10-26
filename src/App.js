@@ -1,23 +1,45 @@
 import {useState} from 'react';
 
+// for firebase functionality/ saving functionality
+import { db } from "./firebase";
+import { collection, addDoc } from "firebase/firestore";
+
+// is there e prevent default in here? ########## TODO
+// Add use effect here ########## TODO
+
 
 export function App() {
   const [list, setList] =useState([]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(""); //title
 
-  const addToDo = (toDo) => {
-    const newToDo = {
-      id: Math.random(),
-      toDo: toDo,
-      completed: false
-    };
+  // supposedly handle to do
+  // https://www.koderhq.com/tutorial/vue/firestore-database/
+  // addDoc(collectionReference, dataObject)
+  // collection(firestoreInstance, 'collectionName')
+  const addToDo = async (toDo) => {
+    // title is input // input is input
+    // input is e.target.value
+    if (input !== "") {
+      const newToDo = {
+        id: Math.random(),
+        toDo: toDo,
+        completed: false
+      };
+      if (input !== "") {
+        // add todo to database (for database method)
+        const collectionRef = collection(db, 'todo');
+        await addDoc(collectionRef, newToDo);
 
-    // add the todo to existing list
-    setList([...list, newToDo]);
+        // // add the todo to existing list (for non database method)
+        // setList([...list, newToDo]);
 
-    // clear input box
-    setInput("");
+        // clear input box
+        setInput("");
 
+      }
+
+
+    }
   };
 
   const deleteToDo = (id) => {
