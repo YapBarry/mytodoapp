@@ -7,10 +7,10 @@ import { query, onSnapshot, doc, updateDoc, deleteDoc, where } from "firebase/fi
 export function App() {
   const [list, setList] =useState([]);
   const [input, setInput] = useState("");
-  const collectionRef = collection(db, 'todo');
+  
   
   useEffect(() => {
-    
+    const collectionRef = collection(db, 'todo');
     const q = query(collectionRef); //where clause if necessary
     const unsub = onSnapshot(q, (querySnapshot) => {
       let todoArray = [];
@@ -18,7 +18,7 @@ export function App() {
         todoArray.push({...doc.data(), id: doc.id});
       });
       setList(todoArray);
-    })
+    });
     return () => unsub();
   }, []);
 
@@ -29,7 +29,7 @@ export function App() {
         completed: false
       };
 
-      await addDoc(collectionRef, newToDo);
+      await addDoc(collection(db, 'todo'), newToDo);
 
       // // add the todo to existing list (for non database method)
       // setList([...list, newToDo]);
@@ -78,7 +78,7 @@ export function App() {
             <input 
             value={toDo.toDo} 
             type="checkbox" 
-            onClick={() => toggleComplete(toDo.id)}/>
+            onClick={() => toggleComplete(toDo)}/>
             <span>{toDo.toDo}</span>
             <button onClick={() => handleDelete(toDo.id)}>&times;</button>  
             <hr></hr>     
