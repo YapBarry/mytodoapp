@@ -3,7 +3,7 @@ import Checkbox from './Checkbox';
 import { db } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
 
-import { query, onSnapshot, doc, updateDoc, deleteDoc, where } from "firebase/firestore";
+import { query, onSnapshot, doc, updateDoc, deleteDoc, orderBy, serverTimestamp} from "firebase/firestore";
 
 export function App() {
   const [list, setList] = useState([]);
@@ -13,22 +13,13 @@ export function App() {
   
   useEffect(() => {
     const collectionRef = collection(db, 'todo');
-    const q = query(collectionRef); //where clause if necessary
+    const q = query(collectionRef, orderBy('createdAt'));
     const unsub = onSnapshot(q, (querySnapshot) => {
       let todoArray = [];
       let cbArray = [];
       querySnapshot.forEach((doc) => {
         todoArray.push({...doc.data(), id: doc.id});
-        // console.log(doc.data().completed);
         cbArray.push(doc.data().completed);
-        // console.log(todoArray); 
-        // console.log(cbArray)
-        // console.log(cbArray[0]);
-        // console.log(cbArray[1]);
-        // console.log(cbArray[2]);
-        // console.log(cbArray[3]);
-        // update here by creating an array and pushing to it during query snapshot
-        // and then setting it to setCb in the next line
       });
       setList(todoArray);
       setCbState(cbArray);
@@ -41,7 +32,8 @@ export function App() {
     if (input !== "") {
       const newToDo = {
         toDo: input,
-        completed: false
+        completed: false,
+        createdAt: serverTimestamp()
       };
 
       await addDoc(collection(db, 'todo'), newToDo);
@@ -84,7 +76,7 @@ export function App() {
             value={toDo.toDo} 
             type="checkbox" 
             checked={cbState[index]}
-            onClick={() => toggleComplete(toDo)}/>
+            onChange={() => toggleComplete(toDo)}/>
             <span>{toDo.toDo}</span>
             <button onClick={() => handleDelete(toDo.id)}>&times;</button>  
             <hr></hr>     
