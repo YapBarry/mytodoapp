@@ -3,13 +3,16 @@ import Checkbox from './Checkbox';
 import { db } from "./firebase";
 import { collection, addDoc } from "firebase/firestore";
 
-import { query, onSnapshot, doc, updateDoc, deleteDoc, orderBy, serverTimestamp} from "firebase/firestore";
+import { query, onSnapshot, doc, updateDoc, deleteDoc, orderBy, serverTimestamp, getDoc} from "firebase/firestore";
 
 export function App() {
   const [list, setList] = useState([]);
   const [input, setInput] = useState("");
   const [cbState, setCbState] = useState([]);
-  
+  const [editState, setEditState] = useState([]);
+  const [editField, setEditField] = useState("");
+  // const [editOn, setEditOn] = useState([]); // need to remove this
+
   
   useEffect(() => {
     const collectionRef = collection(db, 'todo');
@@ -17,12 +20,15 @@ export function App() {
     const unsub = onSnapshot(q, (querySnapshot) => {
       let todoArray = [];
       let cbArray = [];
+      let editArray = [];
       querySnapshot.forEach((doc) => {
         todoArray.push({...doc.data(), id: doc.id});
         cbArray.push(doc.data().completed);
+        editArray.push(doc.data().edited);
       });
       setList(todoArray);
       setCbState(cbArray);
+      setEditState(editArray);
     });
     return () => unsub();
   }, []);
@@ -33,7 +39,8 @@ export function App() {
       const newToDo = {
         toDo: input,
         completed: false,
-        createdAt: serverTimestamp()
+        edited: false,
+        createdAt: serverTimestamp(),
       };
 
       await addDoc(collection(db, 'todo'), newToDo);
@@ -46,8 +53,10 @@ export function App() {
     }
   };
 
-  const handleEdit = async (todo, list) => { 
-    await updateDoc(doc(db, 'todo', todo.id), {toDo: list});
+  const handleEdit = async (todo) => { 
+    await updateDoc(doc(db, 'todo', todo.id), {
+      edited: !todo.edited
+    });
   };
   const toggleComplete = async (todo) => {
     await updateDoc(doc(db, 'todo', todo.id), { 
@@ -57,6 +66,20 @@ export function App() {
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, 'todo', id));
   };
+
+
+  // const viewMode = (<p>hehe</p>);
+  // const editMode = 
+
+  const buttonEditing = (
+    <input
+    type="text"
+    onChange={(e) => setInput(e.target.value)}
+    value={input}
+    >
+    </input>
+  );
+  // const buttonViewing = <span>{toDo.toDo}</span>;
 
   return (
     <div className="App">
@@ -76,8 +99,14 @@ export function App() {
             value={toDo.toDo} 
             type="checkbox" 
             checked={cbState[index]}
-            onChange={() => toggleComplete(toDo)}/>
-            <span>{toDo.toDo}</span>
+            onChange={() => toggleComplete(toDo)}/>      
+            <div>
+              { editState[index]? (<input type="text" onChange={(e) => {
+                setEditField(toDo.toDo)
+                toDo.toDo = e.target.value}
+                } value={toDo.toDo}></input>) : <span>{toDo.toDo}</span> }
+            </div>;
+            <button onClick={() => handleEdit(toDo)}>Edit</button>
             <button onClick={() => handleDelete(toDo.id)}>&times;</button>  
             <hr></hr>     
           </div>
@@ -85,6 +114,7 @@ export function App() {
       </ul>
     </div>
   );
+
 }
 
 export default App;
